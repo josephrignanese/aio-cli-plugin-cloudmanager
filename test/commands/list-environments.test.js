@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const ListEnvironmentsCommand = require('../../src/commands/cloudmanager/list-environments')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('list-environments - missing arg', async () => {
@@ -31,19 +32,14 @@ test('list-environments - missing config', async () => {
 
     let runResult = ListEnvironmentsCommand.run(["--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('list-environments - failure', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "6"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -54,14 +50,9 @@ test('list-environments - failure', async () => {
 
 test('list-environments - success empty', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "5"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -72,14 +63,9 @@ test('list-environments - success empty', async () => {
 
 test('list-environments - success', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(4)
 
@@ -116,14 +102,9 @@ test('list-environments - success', async () => {
 
 test('list-environments - bad program', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "8"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

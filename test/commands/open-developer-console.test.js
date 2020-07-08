@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const OpenDeveloperConsoleCommand = require('../../src/commands/cloudmanager/open-developer-console')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('open-developer-console - missing arg', async () => {
@@ -39,19 +40,14 @@ test('open-developer-console - missing config', async () => {
 
     let runResult = OpenDeveloperConsoleCommand.run(["1", "--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('open-developer-console - failure', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "6"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -62,14 +58,9 @@ test('open-developer-console - failure', async () => {
 
 test('open-developer-console - missing properties', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -80,14 +71,9 @@ test('open-developer-console - missing properties', async () => {
 
 test('open-developer-console - success hal', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -99,14 +85,9 @@ test('open-developer-console - success hal', async () => {
 
 test('open-developer-console - success props', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -118,14 +99,9 @@ test('open-developer-console - success props', async () => {
 
 test('open-developer-console - bad program', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "8"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -136,14 +112,9 @@ test('open-developer-console - bad program', async () => {
 
 test('open-developer-console - bad environment', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

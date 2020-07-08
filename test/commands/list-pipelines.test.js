@@ -11,10 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const ListPipelinesCommand = require('../../src/commands/cloudmanager/list-pipelines')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('list-pipelines - missing arg', async () => {
@@ -30,19 +31,14 @@ test('list-pipelines - missing config', async () => {
 
     let runResult = ListPipelinesCommand.run(["--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('list-pipelines - failure', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "6"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -53,14 +49,9 @@ test('list-pipelines - failure', async () => {
 
 test('list-pipelines - success empty', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -71,14 +62,9 @@ test('list-pipelines - success empty', async () => {
 
 test('list-programs - success', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "5"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -104,14 +90,9 @@ test('list-programs - success', async () => {
 
 test('list-pipelines - program in programs list but not found', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "7"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -122,14 +103,9 @@ test('list-pipelines - program in programs list but not found', async () => {
 
 test('list-pipelines - program doesnt exist', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "8"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

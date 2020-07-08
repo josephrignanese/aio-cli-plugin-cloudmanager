@@ -10,11 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const ListProgramsCommand = require('../../src/commands/cloudmanager/list-programs')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('list-programs - missing config', async () => {
@@ -22,18 +22,11 @@ test('list-programs - missing config', async () => {
 
     let runResult = ListProgramsCommand.run([])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('list-programs - failure', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "not-found"
-            }
-        }),
-    })
+    setCurrentOrgId('not-found')
     expect.assertions(2)
 
     let runResult = ListProgramsCommand.run([])
@@ -42,14 +35,7 @@ test('list-programs - failure', async () => {
 })
 
 test('list-programs - forbideen', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "forbidden"
-            }
-        }),
-    })
+    setCurrentOrgId('forbidden')
     expect.assertions(2)
 
     let runResult = ListProgramsCommand.run([])
@@ -58,14 +44,7 @@ test('list-programs - forbideen', async () => {
 })
 
 test('list-programs - success empty', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "empty"
-            }
-        }),
-    })
+    setCurrentOrgId('empty')
     expect.assertions(2)
 
     let runResult = ListProgramsCommand.run([])
@@ -74,14 +53,7 @@ test('list-programs - success empty', async () => {
 })
 
 test('list-programs - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -109,14 +81,7 @@ test('list-programs - success', async () => {
 })
 
 test('list-programs - filtered', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

@@ -10,26 +10,17 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId } = require('../../cloudmanager-helpers')
+const BaseCommand = require('../../base-command')
+const { getProgramId } = require('../../cloudmanager-helpers')
 const { cli } = require('cli-ux')
 const _ = require("lodash")
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
-
-async function _getQualityGateResults (programId, pipelineId, executionId, action, passphrase) {
-  const apiKey = await getApiKey()
-  const accessToken = await getAccessToken(passphrase)
-  const orgId = await getOrgId()
-  return new Client(orgId, accessToken, apiKey).getQualityGateResults(programId, pipelineId, executionId, action)
-}
 
 function formatMetricName(name) {
     return _.startCase(name.replace('sqale', 'maintainability'))
 }
 
-class GetQualityGateResults extends Command {
+class GetQualityGateResults extends BaseCommand {
   async run () {
     const { args, flags } = this.parse(GetQualityGateResults)
 
@@ -78,7 +69,7 @@ class GetQualityGateResults extends Command {
   }
 
   async getQualityGateResults (programId, pipelineId, executionId, action, passphrase = null) {
-    return _getQualityGateResults(programId, pipelineId, executionId, action, passphrase)
+    return this.withClient(passphrase, client => client.getQualityGateResults(programId, pipelineId, executionId, action))
   }
 }
 

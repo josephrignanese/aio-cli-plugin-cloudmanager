@@ -10,21 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId } = require('../../cloudmanager-helpers')
+const BaseCommand = require('../../base-command')
 const { cli } = require('cli-ux')
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
 
-async function _deleteProgram (programId, pipelineId, passphrase) {
-  const orgId = await getOrgId()
-  const apiKey = await getApiKey()
-  const accessToken = await getAccessToken(passphrase)
-  return new Client(orgId, accessToken, apiKey).deleteProgram(programId, pipelineId)
-}
-
-class DeleteProgramCommand extends Command {
+class DeleteProgramCommand extends BaseCommand {
   async run () {
     const { args, flags } = this.parse(DeleteProgramCommand)
 
@@ -44,7 +34,7 @@ class DeleteProgramCommand extends Command {
   }
 
   async deleteProgram (programId, passphrase = null) {
-    return _deleteProgram(programId, passphrase)
+    return this.withClient(passphrase, client => client.deleteProgram(programId))
   }
 }
 

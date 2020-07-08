@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const ListEnvironmentVariablesCommand = require('../../src/commands/cloudmanager/list-environment-variables')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('list-environment-variables - missing arg', async () => {
@@ -39,19 +40,14 @@ test('list-environment-variables - missing config', async () => {
 
     let runResult = ListEnvironmentVariablesCommand.run(["1", "--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('list-environment-variables - environments not found', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "6"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -62,14 +58,9 @@ test('list-environment-variables - environments not found', async () => {
 
 test('list-environment-variables - no environment', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -80,14 +71,9 @@ test('list-environment-variables - no environment', async () => {
 
 test('list-environment-variables - no variables link', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -98,14 +84,9 @@ test('list-environment-variables - no variables link', async () => {
 
 test('list-environment-variables - link returns 404', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -116,14 +97,9 @@ test('list-environment-variables - link returns 404', async () => {
 
 test('list-environment-variables - success empty', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -134,14 +110,9 @@ test('list-environment-variables - success empty', async () => {
 
 test('list-environment-variables - success', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 

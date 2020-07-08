@@ -10,14 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const GetExecutionStepLog = require('../../src/commands/cloudmanager/get-execution-step-log')
 
 let capturedStdout
 let stdoutWriteToRestore;
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
     capturedStdout = ''
     stdoutWriteToRestore = process.stdout.write.bind(process.stdout);
     process.stdout.write = (chunk) => {
@@ -46,18 +46,11 @@ test('get-execution-step-log - missing config', async () => {
 
     let runResult = GetExecutionStepLog.run(["5", "--programId", "7", "1001", "codeQuality"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('get-execution-step-log - failure', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -67,14 +60,7 @@ test('get-execution-step-log - failure', async () => {
 })
 
 test('get-execution-step-log - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -85,14 +71,7 @@ test('get-execution-step-log - success', async () => {
 })
 
 test('get-execution-step-log - success alternate file', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -103,14 +82,7 @@ test('get-execution-step-log - success alternate file', async () => {
 })
 
 test('get-execution-step-log - not found', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -120,14 +92,7 @@ test('get-execution-step-log - not found', async () => {
 })
 
 test('get-execution-step-log - empty', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -137,14 +102,7 @@ test('get-execution-step-log - empty', async () => {
 })
 
 test('get-execution-step-log - missing step', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -154,14 +112,7 @@ test('get-execution-step-log - missing step', async () => {
 })
 
 test('get-execution-step-log - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 

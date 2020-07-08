@@ -10,22 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command, flags } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId } = require('../../cloudmanager-helpers')
+const BaseCommand = require('../../base-command')
+const { flags } = require('@oclif/command')
+const { getProgramId } = require('../../cloudmanager-helpers')
 const { cli } = require('cli-ux')
 const path = require('path')
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
 
-async function _downloadLogs(programId, environmentId, service, logName, days, outputDirectory, passphrase) {
-    const apiKey = await getApiKey()
-    const accessToken = await getAccessToken(passphrase)
-    const orgId = await getOrgId()
-    return new Client(orgId, accessToken, apiKey).downloadLogs(programId, environmentId, service, logName, days, outputDirectory)
-}
-
-class DownloadLogs extends Command {
+class DownloadLogs extends BaseCommand {
     async run() {
         const { args, flags } = this.parse(DownloadLogs)
 
@@ -61,7 +53,7 @@ class DownloadLogs extends Command {
     }
 
     async downloadLogs(programId, environmentId, service, name, days, outputDirectory, passphrase = null) {
-        return _downloadLogs(programId, environmentId, service, name, days, outputDirectory, passphrase)
+        return this.withClient(passphrase, client => client.downloadLogs(programId, environmentId, service, name, days, outputDirectory))
     }
 }
 

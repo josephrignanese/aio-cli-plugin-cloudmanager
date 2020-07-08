@@ -10,21 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId } = require('../../cloudmanager-helpers')
+const BaseCommand = require('../../base-command')
+const { getProgramId } = require('../../cloudmanager-helpers')
 const { cli } = require('cli-ux')
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
 
-async function _advanceCurrentExecution (programId, pipelineId, passphrase) {
-  const apiKey = await getApiKey()
-  const accessToken = await getAccessToken(passphrase)
-  const orgId = await getOrgId()
-  return new Client(orgId, accessToken, apiKey).advanceCurrentExecution(programId, pipelineId)
-}
-
-class AdvanceCurrentExecutionCommand extends Command {
+class AdvanceCurrentExecutionCommand extends BaseCommand {
   async run () {
     const { args, flags } = this.parse(AdvanceCurrentExecutionCommand)
 
@@ -47,7 +38,7 @@ class AdvanceCurrentExecutionCommand extends Command {
   }
 
   async advanceCurrentExecution (programId, pipelineId, passphrase = null) {
-    return _advanceCurrentExecution(programId, pipelineId, passphrase)
+    return await this.withClient(passphrase, client => client.advanceCurrentExecution(programId, pipelineId))
   }
 }
 

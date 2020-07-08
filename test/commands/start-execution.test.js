@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { cli } = require('cli-ux')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const StartExecutionCommand = require('../../src/commands/cloudmanager/start-execution')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('start-execution - missing arg', async () => {
@@ -32,18 +32,11 @@ test('start-execution - missing config', async () => {
     let runResult = StartExecutionCommand.run(["--programId", "5", "10"])
     await expect(runResult instanceof Promise).toBeTruthy()
     await expect(runResult).resolves.toEqual(undefined)
-    await expect(cli.action.stop.mock.calls[0][0]).toBe("missing config data: jwt-auth")
+    await expect(cli.action.stop.mock.calls[0][0]).toBe("Unable to find IMS context aio-cli-plugin-cloudmanager")
 })
 
 test('start-execution - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -54,14 +47,7 @@ test('start-execution - bad pipeline', async () => {
 })
 
 test('start-execution - failed 412', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -72,14 +58,7 @@ test('start-execution - failed 412', async () => {
 })
 
 test('start-execution - failed 404', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -90,14 +69,7 @@ test('start-execution - failed 404', async () => {
 })
 
 test('start-execution - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 

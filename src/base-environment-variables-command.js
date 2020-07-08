@@ -10,23 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
+const BaseCommand = require('./base-command')
 const { cli } = require('cli-ux')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId } = require('./cloudmanager-helpers')
-const Client = require('./client')
 
-async function _getEnvironmentVariables(programId, environmentId, passphrase) {
-    const apiKey = await getApiKey()
-    const accessToken = await getAccessToken(passphrase)
-    const orgId = await getOrgId()
-    return new Client(orgId, accessToken, apiKey).getEnvironmentVariables(programId, environmentId)
-}
-
-class BaseEnvironmentVariablesCommand extends Command {
+class BaseEnvironmentVariablesCommand extends BaseCommand {
 
     async getEnvironmentVariables(programId, environmentId, passphrase = null) {
-        return _getEnvironmentVariables(programId, environmentId, passphrase)
+        return this.withClient(passphrase, client => client.getEnvironmentVariables(programId, environmentId))
     }
 
     outputTable(result) {

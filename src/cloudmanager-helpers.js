@@ -44,33 +44,6 @@ function isWithinFiveMinutesOfUTCMidnight(date) {
     }
 }
 
-async function getOrgId() {
-    const configData = await getJwtAuth()
-    if (!configData.jwt_payload || !configData.jwt_payload.iss) {
-        throw new Error('missing config data: jwt-auth.jwt_payload.iss')
-    }
-    return configData.jwt_payload.iss
-}
-
-async function getJwtAuth() {
-    const configStr = await Config.get('jwt-auth')
-    if (!configStr) {
-        return Promise.reject(new Error('missing config data: jwt-auth'))
-    }
-
-    const configData = toJson(configStr)
-
-    return configData
-}
-
-async function getApiKey() {
-    const configData = await getJwtAuth()
-    if (!configData.client_id) {
-        throw new Error('missing config data: jwt-auth.client_id')
-    }
-    return configData.client_id
-}
-
 async function getBaseUrl() {
     const configStr = await Config.get('cloudmanager')
 
@@ -111,8 +84,6 @@ function createKeyValueObjectFromFlag (flag) {
 
 module.exports = {
     getBaseUrl,
-    getApiKey,
-    getOrgId,
     getCurrentStep,
     getProgramId,
     getWaitingStep,

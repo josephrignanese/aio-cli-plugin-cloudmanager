@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const fetchMock = require('node-fetch')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const CancelCurrentExecution = require('../../src/commands/cloudmanager/cancel-current-execution')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('cancel-current-execution - missing arg', async () => {
@@ -33,18 +33,11 @@ test('cancel-current-execution - missing config', async () => {
     let runResult = CancelCurrentExecution.run(["--programId", "5", "10"])
     await expect(runResult instanceof Promise).toBeTruthy()
     await expect(runResult).resolves.toEqual(undefined)
-    await expect(cli.action.stop.mock.calls[0][0]).toBe("missing config data: jwt-auth")
+    await expect(cli.action.stop.mock.calls[0][0]).toBe("Unable to find IMS context aio-cli-plugin-cloudmanager")
 })
 
 test('cancel-current-execution - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -55,14 +48,7 @@ test('cancel-current-execution - bad pipeline', async () => {
 })
 
 test('cancel-current-execution - build running', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1005")
 
     expect.assertions(3)
@@ -74,14 +60,7 @@ test('cancel-current-execution - build running', async () => {
 })
 
 test('cancel-current-execution - code quality waiting', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1006")
 
     expect.assertions(3)
@@ -93,14 +72,7 @@ test('cancel-current-execution - code quality waiting', async () => {
 })
 
 test('cancel-current-execution - code quality waiting with no cancel (error state)', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1009")
 
     expect.assertions(3)
@@ -112,14 +84,7 @@ test('cancel-current-execution - code quality waiting with no cancel (error stat
 })
 
 test('cancel-current-execution - approval waiting', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1007")
 
     expect.assertions(3)
@@ -131,14 +96,7 @@ test('cancel-current-execution - approval waiting', async () => {
 })
 
 test('cancel-current-execution - deploy waiting', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1008")
 
     expect.assertions(3)
@@ -150,14 +108,7 @@ test('cancel-current-execution - deploy waiting', async () => {
 })
 
 test('cancel-current-execution - deploy waiting with no advance (error state)', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1010")
 
     expect.assertions(3)

@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { cli } = require('cli-ux')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const UpdatePipelineCommand = require('../../src/commands/cloudmanager/update-pipeline')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('update-pipeline - missing arg', async () => {
@@ -32,18 +32,11 @@ test('update-pipeline - missing config', async () => {
     let runResult = UpdatePipelineCommand.run(["--programId", "5", "10"])
     await expect(runResult instanceof Promise).toBeTruthy()
     await expect(runResult).resolves.toEqual(undefined)
-    await expect(cli.action.stop.mock.calls[0][0]).toBe("missing config data: jwt-auth")
+    await expect(cli.action.stop.mock.calls[0][0]).toBe("Unable to find IMS context aio-cli-plugin-cloudmanager")
 })
 
 test('update-pipeline - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -54,14 +47,7 @@ test('update-pipeline - bad pipeline', async () => {
 })
 
 test('update-pipeline - branch success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -79,14 +65,7 @@ test('update-pipeline - branch success', async () => {
 })
 
 test('update-pipeline - repository and branch success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -104,14 +83,7 @@ test('update-pipeline - repository and branch success', async () => {
 })
 
 test('update-pipeline - both tag and branch', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -121,14 +93,7 @@ test('update-pipeline - both tag and branch', async () => {
 })
 
 test('update-pipeline - malformed tag', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -139,14 +104,7 @@ test('update-pipeline - malformed tag', async () => {
 
 
 test('update-pipeline - correct tag', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 

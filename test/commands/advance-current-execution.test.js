@@ -12,11 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const fetchMock = require('node-fetch')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const AdvanceCurrentExecution = require('../../src/commands/cloudmanager/advance-current-execution')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('advance-current-execution - missing arg', async () => {
@@ -33,18 +33,11 @@ test('advance-current-execution - missing config', async () => {
     let runResult = AdvanceCurrentExecution.run(["--programId", "5", "10"])
     await expect(runResult instanceof Promise).toBeTruthy()
     await expect(runResult).resolves.toEqual(undefined)
-    await expect(cli.action.stop.mock.calls[0][0]).toBe("missing config data: jwt-auth")
+    await expect(cli.action.stop.mock.calls[0][0]).toBe("Unable to find IMS context aio-cli-plugin-cloudmanager")
 })
 
 test('advance-current-execution - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -55,14 +48,7 @@ test('advance-current-execution - bad pipeline', async () => {
 })
 
 test('advance-current-execution - build running', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1005")
 
     expect.assertions(3)
@@ -74,14 +60,7 @@ test('advance-current-execution - build running', async () => {
 })
 
 test('advance-current-execution - code quality waiting', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1006")
 
     expect.assertions(3)
@@ -93,14 +72,7 @@ test('advance-current-execution - code quality waiting', async () => {
 })
 
 test('advance-current-execution - approval waiting', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
     fetchMock.setPipeline7Execution("1007")
 
     expect.assertions(3)

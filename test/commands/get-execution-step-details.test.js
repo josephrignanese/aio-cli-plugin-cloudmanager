@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { cli } = require('cli-ux')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const GetExecutionStepDetails = require('../../src/commands/cloudmanager/get-execution-step-details')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('get-execution-step-details - missing arg', async () => {
@@ -31,18 +31,11 @@ test('get-execution-step-details - missing config', async () => {
 
     let runResult = GetExecutionStepDetails.run(["5", "--programId", "7", "1001"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('get-execution-step-details - failure', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -52,14 +45,7 @@ test('get-execution-step-details - failure', async () => {
 })
 
 test('get-execution-step-details - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(4)
 
@@ -118,14 +104,7 @@ test('get-execution-step-details - success', async () => {
 })
 
 test('get-execution-step-details - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 

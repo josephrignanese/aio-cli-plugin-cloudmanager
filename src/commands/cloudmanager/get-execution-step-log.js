@@ -10,22 +10,14 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command, flags } = require('@oclif/command')
+const BaseCommand = require('../../base-command')
+const { flags } = require('@oclif/command')
 const fs = require("fs")
 const { cli } = require('cli-ux')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId } = require('../../cloudmanager-helpers')
-const Client = require('../../client')
+const { getProgramId } = require('../../cloudmanager-helpers')
 const commonFlags = require('../../common-flags')
 
-async function _getExecutionStepLog (programId, pipelineId, executionId, action, logFile, outputStream, passphrase) {
-  const apiKey = await getApiKey()
-  const accessToken = await getAccessToken(passphrase)
-  const orgId = await getOrgId()
-  return new Client(orgId, accessToken, apiKey).getExecutionStepLog(programId, pipelineId, executionId, action, logFile, outputStream)
-}
-
-class GetExecutionStepLogs extends Command {
+class GetExecutionStepLogs extends BaseCommand {
   async run () {
     const { args, flags } = this.parse(GetExecutionStepLogs)
 
@@ -52,8 +44,8 @@ class GetExecutionStepLogs extends Command {
     return result
   }
 
-  async getExecutionStepLog (programId, pipelineId, executionId, action, outputStream, passphrase = null) {
-    return _getExecutionStepLog(programId, pipelineId, executionId, action, outputStream, passphrase)
+  async getExecutionStepLog (programId, pipelineId, executionId, action, logFile, outputStream, passphrase = null) {
+    return this.withClient(passphrase, client => client.getExecutionStepLog(programId, pipelineId, executionId, action, logFile, outputStream))
   }
 }
 

@@ -10,22 +10,13 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId } = require('../../cloudmanager-helpers')
+const BaseCommand = require('../../base-command')
+const { getProgramId } = require('../../cloudmanager-helpers')
 const { cli } = require('cli-ux')
 const _ = require("lodash")
 const halfred = require('halfred')
 const moment = require("moment")
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
-
-async function _getExecution (programId, pipelineId, executionId, passphrase) {
-  const apiKey = await getApiKey()
-  const accessToken = await getAccessToken(passphrase)
-  const orgId = await getOrgId()
-  return new Client(orgId, accessToken, apiKey).getExecution(programId, pipelineId, executionId)
-}
 
 function formatAction (stepState) {
     if (stepState.action === 'deploy') {
@@ -45,7 +36,7 @@ function formatDuration (stepState) {
         ''
 }
 
-class GetExecutionStepDetails extends Command {
+class GetExecutionStepDetails extends BaseCommand {
   async run () {
     const { args, flags } = this.parse(GetExecutionStepDetails)
 
@@ -100,7 +91,7 @@ class GetExecutionStepDetails extends Command {
   }
 
   async getExecution (programId, pipelineId, executionId, passphrase = null) {
-    return _getExecution(programId, pipelineId, executionId, passphrase)
+    return this.withClient(passphrase, client => client.getExecution(programId, pipelineId, executionId))
   }
 }
 

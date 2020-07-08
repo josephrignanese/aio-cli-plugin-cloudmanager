@@ -11,11 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { cli } = require('cli-ux')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const GetQualityGateResults = require('../../src/commands/cloudmanager/get-quality-gate-results')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('get-quality-gate-results - missing arg', async () => {
@@ -31,18 +31,11 @@ test('get-quality-gate-results - missing config', async () => {
 
     let runResult = GetQualityGateResults.run(["5", "--programId", "7", "1001", "codeQuality"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('get-quality-gate-results - failure', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -52,14 +45,7 @@ test('get-quality-gate-results - failure', async () => {
 })
 
 test('get-quality-gate-results - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(8)
 
@@ -90,14 +76,7 @@ test('get-quality-gate-results - success', async () => {
 })
 
 test('get-quality-gate-results - not found', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -107,14 +86,7 @@ test('get-quality-gate-results - not found', async () => {
 })
 
 test('get-quality-gate-results - empty', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -124,14 +96,7 @@ test('get-quality-gate-results - empty', async () => {
 })
 
 test('get-quality-gate-results - missing performance step', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -141,14 +106,7 @@ test('get-quality-gate-results - missing performance step', async () => {
 })
 
 test('get-quality-gate-results - missing security step', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -158,14 +116,7 @@ test('get-quality-gate-results - missing security step', async () => {
 })
 
 test('get-quality-gate-results - bad pipeline', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(2)
 

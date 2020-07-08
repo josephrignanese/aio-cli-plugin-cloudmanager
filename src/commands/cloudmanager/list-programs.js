@@ -10,21 +10,12 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { Command, flags } = require('@oclif/command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId } = require('../../cloudmanager-helpers')
-const Client = require('../../client')
+const { flags } = require('@oclif/command')
 const { cli } = require('cli-ux')
+const BaseCommand = require('../../base-command')
 const commonFlags = require('../../common-flags')
 
-async function _listPrograms(passphrase) {
-    const apiKey = await getApiKey()
-    const accessToken = await getAccessToken(passphrase)
-    const orgId = await getOrgId()
-    return new Client(orgId, accessToken, apiKey).listPrograms()
-}
-
-class ListProgramsCommand extends Command {
+class ListProgramsCommand extends BaseCommand {
     async run() {
         const { flags } = this.parse(ListProgramsCommand)
         let result
@@ -53,7 +44,7 @@ class ListProgramsCommand extends Command {
     }
 
     async listPrograms(passphrase = null) {
-        return _listPrograms(passphrase)
+        return this.withClient(passphrase, client => client.listPrograms())
     }
 }
 

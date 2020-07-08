@@ -11,12 +11,11 @@ governing permissions and limitations under the License.
 */
 
 const { cli } = require('cli-ux')
-const fetchMock = require('node-fetch')
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const DeleteProgramCommand = require('../../src/commands/cloudmanager/delete-program')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('delete-program - missing arg', async () => {
@@ -33,18 +32,11 @@ test('delete-program - missing config', async () => {
     let runResult = DeleteProgramCommand.run(["5"])
     await expect(runResult instanceof Promise).toBeTruthy()
     await expect(runResult).resolves.toEqual(undefined)
-    await expect(cli.action.stop.mock.calls[0][0]).toBe("missing config data: jwt-auth")
+    await expect(cli.action.stop.mock.calls[0][0]).toBe("Unable to find IMS context aio-cli-plugin-cloudmanager")
 })
 
 test('delete-program - delete program returns 400', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -55,14 +47,7 @@ test('delete-program - delete program returns 400', async () => {
 })
 
 test('delete-program - bad program', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -73,14 +58,7 @@ test('delete-program - bad program', async () => {
 })
 
 test('delete-program - success', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+setCurrentOrgId('good')
 
     expect.assertions(3)
 

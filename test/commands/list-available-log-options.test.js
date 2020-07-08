@@ -12,10 +12,11 @@ governing permissions and limitations under the License.
 
 const { cli } = require('cli-ux')
 const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const ListAvailableLogOptionsCommand = require('../../src/commands/cloudmanager/list-available-log-options')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('list-available-logs - missing arg', async () => {
@@ -39,19 +40,14 @@ test('list-available-logs - missing config', async () => {
 
     let runResult = ListAvailableLogOptionsCommand.run(["1", "--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('list-available-logs - failure', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "6"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -62,14 +58,9 @@ test('list-available-logs - failure', async () => {
 
 test('list-available-logs - success undefined', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -81,14 +72,9 @@ test('list-available-logs - success undefined', async () => {
 
 test('list-available-logs - success empty', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -100,14 +86,9 @@ test('list-available-logs - success empty', async () => {
 
 test('list-available-logs - success', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -156,14 +137,9 @@ test('list-available-logs - success', async () => {
 
 test('list-available-logs - bad program', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "8"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -174,14 +150,9 @@ test('list-available-logs - bad program', async () => {
 
 test('list-available-logs - bad environment', async () => {
     setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
         'cloudmanager_programid': "4"
     })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

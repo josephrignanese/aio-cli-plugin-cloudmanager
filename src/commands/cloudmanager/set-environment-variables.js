@@ -12,18 +12,9 @@ governing permissions and limitations under the License.
 
 const { flags } = require('@oclif/command')
 const BaseEnvironmentVariablesCommand = require('../../base-environment-variables-command')
-const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getOrgId, getProgramId, createKeyValueObjectFromFlag } = require('../../cloudmanager-helpers')
+const { getProgramId, createKeyValueObjectFromFlag } = require('../../cloudmanager-helpers')
 const { cli } = require('cli-ux')
-const Client = require('../../client')
 const commonFlags = require('../../common-flags')
-
-async function _setEnvironmentVariables(programId, environmentId, variables, passphrase) {
-    const apiKey = await getApiKey()
-    const accessToken = await getAccessToken(passphrase)
-    const orgId = await getOrgId()
-    return new Client(orgId, accessToken, apiKey).setEnvironmentVariables(programId, environmentId, variables)
-}
 
 class SetEnvironmentVariablesCommand extends BaseEnvironmentVariablesCommand {
     async run() {
@@ -93,7 +84,7 @@ class SetEnvironmentVariablesCommand extends BaseEnvironmentVariablesCommand {
     }
 
     async setEnvironmentVariables(programId, environmentId, variables, passphrase = null) {
-        return _setEnvironmentVariables(programId, environmentId, variables, passphrase)
+        return this.withClient(passphrase, client => client.setEnvironmentVariables(programId, environmentId, variables))
     }
 }
 

@@ -10,12 +10,11 @@ OF ANY KIND, either express or implied. See the License for the specific languag
 governing permissions and limitations under the License.
 */
 
-const { setStore } = require('@adobe/aio-lib-core-config')
+const { resetCurrentOrgId, setCurrentOrgId } = require('@adobe/aio-lib-ims')
 const TailLog = require('../../src/commands/cloudmanager/tail-log')
-const Client = require('../../src/client')
 
 beforeEach(() => {
-    setStore({})
+    resetCurrentOrgId()
 })
 
 test('tail-log - missing arg', async () => {
@@ -31,18 +30,11 @@ test('tail-log - missing config', async () => {
 
     let runResult = TailLog.run(["5", "author", "aemerror", "--programId", "5"])
     await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('missing config data: jwt-auth'))
+    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
 })
 
 test('tail-log - failure', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 
@@ -52,14 +44,7 @@ test('tail-log - failure', async () => {
 })
 
 test('tail-log - no logs for tailing', async () => {
-    setStore({
-        'jwt-auth': JSON.stringify({
-            client_id: '1234',
-            jwt_payload: {
-                iss: "good"
-            }
-        }),
-    })
+    setCurrentOrgId('good')
 
     expect.assertions(2)
 

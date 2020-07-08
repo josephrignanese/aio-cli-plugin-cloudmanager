@@ -28,7 +28,8 @@ module.exports = {
         variables: 'http://ns.adobe.com/adobecloud/rel/variables'
     },
     config: {
-        programId: 'cloudmanager_programid'
+        programId: 'cloudmanager_programid',
+        imsContext: 'aio-cli-plugin-cloudmanager'
     },
     problemTypes: {
         validation: 'http://ns.adobe.com/adobecloud/validation-exception'
