@@ -17,14 +17,6 @@ beforeEach(() => {
     resetCurrentOrgId()
 })
 
-test('list-programs - missing config', async () => {
-    expect.assertions(2)
-
-    let runResult = ListProgramsCommand.run([])
-    await expect(runResult instanceof Promise).toBeTruthy()
-    await expect(runResult).rejects.toEqual(new Error('Unable to find IMS context aio-cli-plugin-cloudmanager'))
-})
-
 test('list-programs - failure', async () => {
     setCurrentOrgId('not-found')
     expect.assertions(2)

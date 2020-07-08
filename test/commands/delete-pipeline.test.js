@@ -36,7 +36,7 @@ test('delete-pipeline - missing config', async () => {
 })
 
 test('delete-pipeline - delete pipeline returns 400', async () => {
-setCurrentOrgId('good')
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -47,7 +47,7 @@ setCurrentOrgId('good')
 })
 
 test('delete-pipeline - bad pipeline', async () => {
-setCurrentOrgId('good')
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
@@ -58,7 +58,7 @@ setCurrentOrgId('good')
 })
 
 test('delete-pipeline - success', async () => {
-setCurrentOrgId('good')
+    setCurrentOrgId('good')
 
     expect.assertions(3)
 
