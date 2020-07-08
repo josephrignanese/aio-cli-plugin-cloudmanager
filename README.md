@@ -44,15 +44,19 @@ $ aio plugins:update
 At minimum, an integration must be created in the [Adobe I/O Console](https://console.adobe.io) which has the Cloud Manager service. You may also add other services to this integration
 if you want to use other Adobe I/O CLI plugins. For example, to use the [Console Plugin](https://github.com/adobe/aio-cli-plugin-console/), your integration needs to have the "I/O Management API" service.
 
-After you've created the integration, create a `config.json` file on your computer and navigate to the integration Overview page. From this page, copy the `client_id` and `client_secret` values to the config file; if you navigate to the JWT tab in Console, you'll get the value for the `jwt_payload`.
+After you've created the integration, create a `config.json` file on your computer and navigate to the integration Overview page. From this page, copy the values into the file as described below.
 
 ```
 //config.json 
 {
   "client_id": "value from your CLI integration (String)",
   "client_secret": "value from your CLI integration (String)",
-  "jwt_payload": { value from your CLI integration (JSON Object Literal) },
-  "token_exchange_url": "https://ims-na1.adobelogin.com/ims/exchange/jwt"
+  "technical_account_id": "value from your CLI integration (String)",
+  "technical_account_email": "value from your CLI integration (String)",
+  "ims_org_id": "value from your CLI integration (String)",
+  "meta_scopes": [
+    "ent_cloudmgr_sdk"
+  ]
 }
 ```
 
@@ -61,7 +65,7 @@ The last bit you need to have at hand is the private certificate you've used to 
 First, configure the credentials:
 
 ```
-aio config:set jwt-auth PATH_TO_CONFIG_JSON_FILE --file --json
+aio config:set ims.contexts.aio-cli-plugin-cloudmanager PATH_TO_CONFIG_JSON_FILE --file --json
 ```
 
 Then, configure the private certificate:
