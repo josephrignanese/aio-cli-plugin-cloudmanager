@@ -62,6 +62,14 @@ async function getProgramId (flags) {
   return programId
 }
 
+async function getEnvironmentId (environmentId) {
+  const envId = environmentId || await Config.get('cloudmanager_environmentid')
+  if (!environmentId) {
+    throw new Error('Environment ID must be specified either as an argument or through cloudmanager_environmentid config value')
+  }
+  return sanitizeEnvironmentId(environmentId)
+}
+
 function createKeyValueObjectFromFlag (flag) {
   if (flag.length % 2 === 0) {
     let i
@@ -94,6 +102,7 @@ module.exports = {
   getApiKey,
   getOrgId,
   getProgramId,
+  getEnvironmentId,
   createKeyValueObjectFromFlag,
   sanitizeEnvironmentId
 }

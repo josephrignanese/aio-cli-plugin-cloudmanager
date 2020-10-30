@@ -12,7 +12,7 @@ governing permissions and limitations under the License.
 
 const { Command } = require('@oclif/command')
 const { accessToken: getAccessToken } = require('@adobe/aio-cli-plugin-jwt-auth')
-const { getApiKey, getBaseUrl, getOrgId, getProgramId, sanitizeEnvironmentId } = require('../../cloudmanager-helpers')
+const { getApiKey, getBaseUrl, getOrgId, getProgramId, getEnvironmentId } = require('../../cloudmanager-helpers')
 const { init } = require('@adobe/aio-lib-cloudmanager')
 const commonFlags = require('../../common-flags')
 
@@ -27,11 +27,12 @@ async function _tailLog (programId, environmentId, service, logName, passphrase)
 
 class TailLog extends Command {
   async run () {
-    const { args, flags } = this.parse(TailLog)
+    const argFormat = this.argv.length > 2 ? TailLog.argsEnv : TailLog.argsNoEnv
+    const { args, flags } = this.parse( {...TailLog, args: argFormat })
 
     const programId = await getProgramId(flags)
-
-    const environmentId = sanitizeEnvironmentId(args.environmentId)
+    
+    const environmentId = await getEnvironmentId(args.environmentId)
 
     let result
 
@@ -53,11 +54,15 @@ class TailLog extends Command {
 
 TailLog.description = 'outputs a stream of log data for the specified environment, service and log name'
 
+// Used for help
 TailLog.args = [
-  { name: 'environmentId', required: true, description: 'the environment id' },
+  { name: 'environmentId', required: false, description: 'the environment id' },
   { name: 'service', required: true, description: 'the service' },
   { name: 'name', required: true, description: 'the log name' }
 ]
+
+TailLog.argsEnv = [{ name: 'environmentId', required: true, description: 'the environment id' }, ...TailLog.args.slice(1)]
+TailLog.argsNoEnv = TailLog.args.slice(1)
 
 TailLog.flags = {
   ...commonFlags.global,
